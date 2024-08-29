@@ -1,4 +1,3 @@
-# БрвыЦїКЭБрвыбЁЯю
 CC=$(CROSS_COMPILE)gcc
 CFLAGS=-Wall -I$(STAGING_DIR)/usr/include/json-c
 LDFLAGS=-L$(STAGING_DIR)/usr/lib -ljson-c

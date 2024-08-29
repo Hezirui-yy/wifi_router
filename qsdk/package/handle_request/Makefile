@@ -1,6 +1,5 @@
 include $(TOPDIR)/rules.mk
 
-
 PKG_NAME:=handle_request
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
@@ -31,7 +30,7 @@ endef
 define Build/Compile
 	$(TARGET_CC) $(TARGET_CFLAGS) $(TARGET_CPPFLAGS) \
 		-I$(STAGING_DIR)/usr/include/json-c \
-		-o $(PKG_BUILD_DIR)/json_handler \
+		-o $(PKG_BUILD_DIR)/json_handle.cgi \
 		$(PKG_BUILD_DIR)/handle_request.c \
 		-L$(STAGING_DIR)/usr/lib -ljson-c
 endef
@@ -39,7 +38,7 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/www/cgi-bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/json_handler $(1)/www/cgi-bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/json_handle.cgi $(1)/www/cgi-bin/
 endef
 
 
