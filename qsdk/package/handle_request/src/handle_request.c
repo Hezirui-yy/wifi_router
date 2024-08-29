@@ -183,7 +183,7 @@ void handle_post_request() {
         json_object_object_add(response, "error", json_object_new_int(0));
         printf("%s\n", json_object_to_json_string(response));
         json_object_put(response);
-    }else if(strcmp(action, "GetWifi") == 0){
+    }else if(strcmp(action,"GetWifi") == 0){
 	char wifi_device[MAX_BUFFER] = {0};
         char wifi_network[MAX_BUFFER] = {0};
         char wifi_mode[MAX_BUFFER] = {0};
@@ -230,11 +230,80 @@ void handle_post_request() {
         
         printf("%s\n", json_object_to_json_string(response));
         json_object_put(response);
+    }else if(strcmp("SetDHCP",action)==0){
+        char cmd[512]={0};
+        int error=0;
+        char *ipaddr=json_get_string_value_by_field(myjson, "ipaddr");
+        if(ipaddr){
+            error=1;
+        }
+        char *netmask=json_get_string_value_by_field(myjson,"netmask");
+        if(netmask){
+            error=1;
+        }
+        char *start=json_get_string_value_by_field(myjson,"start");
+        if(start){
+            error=1;
+        }
+        char *limit=json_get_string_value_by_field(myjson,"limit");
+        if(limit){
+            error=1;
+        }
+        char *leasetime=json_get_string_value_by_field(myjson,"leasetime");
+        if(leasetime){
+            error=1;
+        }
+        //uci set network.lan.ipaddr xx
+        sprintf(cmd,"uci set network.lan.ipaddr %s",ipaddr);
+        system(cmd);
+        
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set network.lan.netmask %s",netmask);
+        system(cmd);
+        
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set network.lan.start %s",start);
+        system(cmd);
+        
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set network.lan.limit %s",limit);
+        system(cmd);
+        
+        memset(cmd,0,512);
+        sprintf(cmd,"uci set network.lan.leasetime %s",leasetime);
+        system(cmd);
+        
+        system("uci commit");
+        system("/etc/init.d/network restart");
+        
+        printf("{\"error\":%dl\n",error);
+    }else if(strcmp(action,"SetWifi")==0){
+        char cmd[512]={0};
+        int error=0;
+        char *wifi_device=json_get_string_value_by_field(myjson,"wifi_device");
+        if(wifi_device){
+            error=1;
+        }
+        char *wifi_ssid=json_get_string_value_by_field(myjson,"wifi_ssid");
+        if(wifi_ssid){
+            error=1;
+        }
+        memset(cmd,0,512);
+        sprintf(cmd,"uci get wireless.wla.device=%s",wifi_device);
+        system(cmd);
+        
+        memset(cmd,0,512);
+        sprintf(cmd,"uci get wireless.wla.ssid=%s",wifi_ssid);
+        system(cmd);
+        
+        system("uci commit wireless");
+        system("/etc/init.d/wireless restart");
+        
+        printf("{\"error\":%d\n",error);
     }else{
-	fprintf(stderr, "Error: Unknown action %s\n", action);
+        fprintf(stderr, "Error: Unknown action %s\n",action);
         printf("{\"error\":1,\"message\":\"Unknown action\"}\n");
     }
-
     json_object_put(myjson);
 }
 
